@@ -1,3 +1,57 @@
+<!-- .slide: data-state="normal" id="config-intro" data-timing="30" -->
+## Configuration
+
+* YAML is lingua franca for prometheus
+* In SUSE Enterprise Storage we use salt (in DeepSea)
+* maybe just add config file here?
+* or talk about target configuration file_sd_config
+
+
+<!-- .slide: data-state="normal" id="config-deployment" data-timing="30" -->
+## Deployment considerations
+
+talk about HA and scaling
+
+
+<!-- .slide: data-state="normal" id="query-intro" data-timing="30" -->
+## Query language
+
+* come back to metric structure
+* talk about labels and label matching
+* instant vector vs the other one
+* simple plot of a simple query
+
+
+<!-- .slide: data-state="normal" id="query-operators" data-timing="30" -->
+## Query language - Operators
+
+
+<!-- .slide: data-state="normal" id="query-functions" data-timing="30" -->
+## Query language - Functions
+
+
+<!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
+## Complex queries - Aggregations
+
+
+<!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
+## Complex queries - Correlating Exporters
+
+
+<!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
+## Complex queries - Back to the Future
+
+Great scott!
+
+
+<!-- .slide: data-state="normal" id="alerts-rules" data-timing="30" -->
+## Alerting - Rules
+
+
+<!-- .slide: data-state="normal" id="alerts-alertmanager" data-timing="30" -->
+## Alerting - Manage alerts
+
+
 <!-- .slide: data-state="normal" id="color-palette" -->
 ## Color Palette
 

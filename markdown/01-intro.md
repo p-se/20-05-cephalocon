@@ -15,17 +15,22 @@
 
 
 <!-- .slide: data-state="normal" id="agenda" data-menu-title="Agenda" -->
+## Motivation
+
+Intro to Prometheus and Grafana and provide enough info to customize the default
+monitoring stack for a given cluster
+
 ## Agenda
 
 * **Grafana**
 
 * **Prometheus**
-    * Intro
-    * Exporters
-    * Configuration
-    * Query language
-    * Alerting
-    * Deployment considerations
+  * Intro
+  * Exporters
+  * Configuration
+  * Deployment considerations
+  * Query language
+  * Alerting
 
 
 <!-- .slide: data-state="normal" id="grafana-intro" data-timing="30" -->
@@ -52,13 +57,14 @@ top: 400px; left: 900px"/>
 
 * Originally developed at SoundCloud (started 2012), inspired by Borgmon
 * CNCF member project (2nd ever Incubator Project)
-* Built for highly-dimensional data, simple operations, scalability
+* Built for highly-dimensional (_numerical_) data, simple operations, scalability
 * Powerful query language
 * Widely adopted
 
 Note:
 * scalability often considered to be a result of the pull based model
 * also users: SUSE and most SES customers
+* _NOT_ a log analysis system!!!
 
 
 <!-- .slide: data-state="normal" id="alertmanager-intro" data-timing="30" -->
@@ -68,6 +74,7 @@ Note:
 The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integrations such as email, PagerDuty, or OpsGenie. It also takes care of silencing and inhibition of alerts.
 </blockquote>
 
+* only component aware of clustering
 * Part of the Prometheus project
 * Can be used without Prometheus
 
