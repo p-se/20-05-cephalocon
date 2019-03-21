@@ -111,7 +111,7 @@ Note:
 
 <div class="slide-section fragment" style="padding-top: 40px; padding-left:130px">
 <pre>
-<code class="html hljs">
+<code>
 \# TYPE ceph_my_metric counter
 \# HELP ceph_my_metric metric description
 ceph_my_metric{labelname="labelvalue", ...} metric_value
@@ -122,5 +122,10 @@ ceph_my_metric{labelname="labelvalue", ...} metric_value
 <p class="fragment" style="padding-top: 200px;">More on writing exporters: https://prometheus.io/docs/instrumenting/writing_exporters/</p>
 
 Note:
-* We will only use the node_exporter and the mgr module
 * Ideally code is instrumented directly, client libraries exist
+* Basic metrics, no processing. Give only byte count not rate for example
+* Goal is to have a minimal set of metrics, leave metrics out that can be
+  derived
+* Metrics are meant to give a base unit (like seconds, bytes used)
+* our metric can do everything, we'll assign various meanings to it during the
+  presentation

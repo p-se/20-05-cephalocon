@@ -1,4 +1,4 @@
-<!-- .slide: data-state="section-break-2" id="section-break-2" data-timing="10s" -->
+<!-- .slide: data-state="section-break-2" id="section-query" data-timing="10s" -->
 # Querying
 
 
@@ -9,7 +9,7 @@
 
 * Expressions return either an _Instant Vector_ or a _Range Vector_
 <span style="font-size:20px;">(or String or Scalar)</span>
-* _Instant Vector_ gives a single value per metric and timestamp
+* _Instant Vector_ gives a single value per metric and time stamp
 
 ```
 > ceph_my_metric
@@ -18,7 +18,7 @@ ceph_my_metric{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 714
 ceph_my_metric{ceph_daemon="osd.2",instance="data2.ceph",device="sda"} 236
 ceph_my_metric{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} 923
 ```
-* _Range Vector_ gives a range of values per metric and timestamp
+* _Range Vector_ gives a range of values per metric and time stamp
 
 ```
 > ceph_my_metric[30s]
@@ -34,38 +34,121 @@ ceph_my_metric{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} [923,872]
 
 Labels can be matched with `=`, `!=`, `=~` and `!~`.
 
-```
-node_disk_io_now{instance=~".*data3.*"}
+<pre><code> > ceph_my_metric{ceph_daemon="osd.0"}
+ceph_my_metric{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 723
+</code></pre>
 
-node_disk_io_now{device="dm-0",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 9071357
-node_disk_io_now{device="dm-1",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 9071357
-node_disk_io_now{device="vda",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 90725
-node_disk_io_now{device="vda1",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 90725
-node_disk_io_now{device="vdb",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 45745
-node_disk_io_now{device="vdc",instance="data3.virt1.home.fajerski.name:9100",job="node-exporter"} 902875
-```
+<pre class="fragment"><code> > ceph_my_metric{instance=~"data1.\*"}
+ceph_my_metric{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 723
+ceph_my_metric{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 714
+</code></pre>
+
+<pre class="fragment"><code> > ceph_my_metric{device!="sdb"}
+ceph_my_metric{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 723
+ceph_my_metric{ceph_daemon="osd.2",instance="data2.ceph",device="sda"} 236
+ceph_my_metric{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} 923
+</code></pre>
 
 
 <!-- .slide: data-state="normal" id="query-operators" data-timing="30" -->
 ## Query language - Operators
+### Binary Operators
+
+* For combinations of Scalar and Vector values:
+  * Arithmetic ` + - * / % ^`
+  * Comparison ` == != < > <= >=`
+  * Operate on values if vectors match
+* Only for two vectors:
+  * Set operators ` and or unless`
+  * Returns a new vector if labels match
+* Vector matching: find an element in the right-hand side for each entry in the left-hand side
+  * Can be controlled with keywords `on` and `ignoring`
+* Aggregations - operates on all elements of a vector (_across all label dimensions_)
+  * `sum stddev max topk count quantile ...`
+  * `by` and `without` control result vector labels
 
 
 <!-- .slide: data-state="normal" id="query-functions" data-timing="30" -->
 ## Query language - Functions
+### Functions modify do what?
+
+* `abs(v instant-vector)` - modifies all values to their absolute value
+* `deriv(v range-vector)` - per-second derivative using linear regression
+* `rate(v range-vector)` - per-second average rate in increase
+* `time()` - returns the current linux time stamp
+* `label_replace(v instant-vector, dst_label string, replacement string, src_label string, regex string)`
+* `<aggregation>_over_time(v range-vector)` - aggregation operators for Range Vectors
+
+<div class="fragment" style="padding-top:170px;">Many more - see https://prometheus.io/docs/prometheus/latest/querying/functions/</div>
 
 
-<!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
-## Complex queries - Aggregations
+<!-- .slide: data-state="normal" id="query-level1" data-timing="30" -->
+## Simple queries
+
+<pre class="fragment"><code> > ceph_my_metric{instance=~"data1.\*"}
+ceph_my_metric{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 723
+ceph_my_metric{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 714
+</code></pre>
+
+<pre class="fragment"><code> > ceph_my_metric_size - ceph_my_metric
+{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 2394
+{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 9823
+{ceph_daemon="osd.2",instance="data2.ceph",device="sda"} 1745
+{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} 9976
+</code></pre>
+
+<pre class="fragment"><code> > sum(ceph_my_metric{instance=~"data1.\*"})
+{} 1437
+</code></pre>
+
+<pre class="fragment"><code> > rate(ceph_my_metric{instance=~"data1.\*"}[5m])
+{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 5.234236
+{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 10.09257
+</code></pre>
 
 
 <!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
 ## Complex queries - Correlating Exporters
+### One label to rule them all.
+
+* Correlate our metric with a smart attribute of its drive
+* `reallocated_sectors` actually called `smartmon_reallocated_sector_ct_rw_value` <!-- .element style="font-size: 20px;" -->
+* Has a `device` label
+* How many `reallocated_sectors` for `my_ceph_metric` devices?
+
+<pre class="fragment"><code> > reallocated_sectors and on(device) ceph_my_metric
+reallocated_sectors{instance="data1.ceph",device="sda"} 0
+reallocated_sectors{instance="data1.ceph",device="sdb"} 0
+reallocated_sectors{instance="data2.ceph",device="sda"} 0
+reallocated_sectors{instance="data3.ceph",device="sda"} 1
+</code></pre>
+
+<pre class="fragment"><code> > reallocated_sectors and on(device) ceph_my_metric{ceph_daemon="osd.1"}
+reallocated_sectors{instance="data1.ceph",device="sda"} 0
+</code></pre>
 
 
-<!-- .slide: data-state="normal" id="query-level2" data-timing="30" -->
+<!-- .slide: data-state="normal" id="query-level3" data-timing="30" -->
 ## Complex queries - Back to the Future
-
 ### Great Scott!
+
+* Get a warning before things go wrong.
+* Good to know an OSD is full.
+* Better to know when an OSD _will_ be full
+
+<pre class="fragment"><code> > predict_linear(ceph_my_metric[1h], 4*3600)
+{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 1298.153
+{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 1658.547
+{ceph_daemon="osd.2",instance="data2.ceph",device="sda"} 1475.873
+{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} 500.239
+</code></pre>
+
+<pre class="fragment"><code> > (ceph_my_metric_size - ceph-my_metric) / deriv(ceph_my_metric[1h])
+{ceph_daemon="osd.0",instance="data1.ceph",device="sda"} 78973
+{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 67814
+{ceph_daemon="osd.2",instance="data2.ceph",device="sda"} 162
+{ceph_daemon="osd.3",instance="data3.ceph",device="sda"} -872
+</code></pre>
 
 
 <!-- .slide: data-state="normal" id="alerts-rules" data-timing="30" -->
@@ -76,200 +159,22 @@ node_disk_io_now{device="vdc",instance="data3.virt1.home.fajerski.name:9100",job
 ## Alerting - Manage alerts
 
 
-<!-- .slide: data-state="normal" id="color-palette" -->
-## Color Palette
+<!-- .slide: data-state="section-break" id="fin" data-timing="30" -->
+# Thank you - Questions?
 
-<div class="palette-text">
-    <p>
-        <b>Colors:</b> Approved RGB colors for SUSE&reg;
-        presentations have been outlined to ensure color accuracy.
-    </p>
-
-    <hr />
-
-    <h3 style="margin: 30px 0px;">How to use these SUSE colors:</h3>
-
-    <p>
-        Simply use CSS classes, e.g.
-        <ul>
-            <li>
-                <code class="fg-bright-orange">
-                    &lt;p class="fg-bright-orange"&gt;
-                </code>
-            </li>
-            <li>
-                <code class="bg-bright-purple" style="color: white; padding: 6px;">
-                    &lt;li class="bg-bright-purple" style="color: white"&gt;
-                </code>
-            </li>
-        </ul>
-        or
-        <a href="http://sass-lang.org/guide">Sass</a>
-        <a href="http://sass-lang.org/guide#topic-2">variables</a>, e.g.
-        <ul>
-            <li>
-                <code class="fg-bright-royal">
-                        .my-class { color: $bright‑royal; }
-                </code>
-            </li>
-        </ul>
-    </p>
-
-    <hr />
-
-    <p>
-        For more information on SUSE color palette guidelines,
-        visit <a href="www.suse.com/brandcentral">www.suse.com/brandcentral</a>
-    </p>
-</div>
-
-<div class="big-swatch bg-SUSE-green">SUSE Green</div>
-<div class="big-swatch bg-dark-blue">Dark Blue</div>
-
-<br clear="left" />
-
-<div class="swatch bg-bright-green fg-bright-blue">Bright Green</div>
-<div class="swatch bg-medium-green">Medium Green</div>
-<div class="swatch bg-bright-teal">Bright Teal</div>
-
-<div class="swatch bg-light-blue">Light Blue</div>
-<div class="swatch bg-bright-blue">Bright Blue</div>
-<div class="swatch bg-bright-royal">Bright Royal</div>
-
-<br clear="left" />
-
-<div class="swatch bg-dark-purple">Dark Purple</div>
-<div class="swatch bg-bright-purple">Bright Purple</div>
-<div class="swatch bg-bright-magenta">Bright Magenta</div>
-<div class="swatch bg-light-magenta">Light Magenta</div>
-
-<br clear="left" />
-
-<div class="swatch bg-dark-orange">Dark Orange</div>
-<div class="swatch bg-medium-orange">Medium Orange</div>
-<div class="swatch bg-light-yellow fg-medium-orange">Light Yellow</div>
-
-<br clear="left" />
-
-<div class="swatch bg-dark-neutral">Dark Neutral</div>
-<div class="swatch bg-medium-dark-neutral">MD/Dark Neutral</div>
-<div class="swatch bg-medium-neutral">Medium Neutral</div>
-<div class="swatch bg-light-neutral fg-medium-dark-neutral">Light Neutral</div>
-<div class="swatch bg-tint-neutral fg-medium-dark-neutral">Tint Neutral</div>
-
+<div style="color: #02d35f; padding-top: 300px;">
+<span style="font-weight: bold;">
+Many Thanks to
+<a style="color: #02d35f !important;" href="https://github.com/aspiers/presentation-template">Adam Spiers</a> ,
+<a style="color: #02d35f !important;" href="https://github.com/fghaas/presentation-template/">Florian Haas</a> and 
+<a style="color: #02d35f !important;" href="https://github.com/hakimel/reveal.js/">Hakim El-Hattab and contributors</a>
+</span>
 </div>
 
 
-<!-- .slide: data-state="normal" id="graphics-and-typeface" data-timing="60s" -->
-## Graphics and Typeface
+<!-- .slide: data-state="normal" id="credits" data-menu-title="QR code" data-timing="0" -->
+<div class="qrcode palette-text" id="qrcode-talk" />
 
-<div class="slide-section">
-    <h3> Primary Icon Color </h3>
-    <img data-src="images/SUSE/bars.png" style="width: 150px;" />
-    <img data-src="images/SUSE/disk.png" style="width:  80px;" />
-    <div class="icons-typeface">
-        <p>
-            <b>Icons:</b> Icon libraries are available for download in
-            bubble and 3-D designs. The primary color for SUSE is
-            green.
-        </p>
-        <p>
-            <b>Typeface:</b> Arial is the typeface for all SUSE
-            presentations.
-        </p>
-    </div>
-</div>
-<div class="slide-section">
-    <h3> Bubble </h3>
-    <img data-src="images/SUSE/folder.png" style="width:  100px;" />
-    <img data-src="images/SUSE/computer.png" style="width:  100px;" />
-    <img data-src="images/SUSE/right-arrow.png" style="width:  100px;" />
-    <img data-src="images/SUSE/squeeze-arrows.png" style="width:  100px;" />
-    <img data-src="images/SUSE/USB.png" style="width:  100px;" />
-    <img data-src="images/SUSE/bug.png" style="width:  100px;" />
-    <img data-src="images/SUSE/cylinder.png" style="width:  100px;" />
-    <img data-src="images/SUSE/brain.png" style="width:  100px;" />
-</div>
-<div class="slide-section">
-    <h3> 3D </h3>
-    <img data-src="images/SUSE/desktop-computer.png" style="width:  80px;" />
-    <img data-src="images/SUSE/pie.png" style="width:  80px;" />
-    <img data-src="images/SUSE/meters.png" style="width:  80px;" />
-    <img data-src="images/SUSE/office.png" style="width:  80px;" />
-    <img data-src="images/SUSE/printer.png" style="width:  80px;" />
-    <img data-src="images/SUSE/box.png" style="width:  80px;" />
-    <img data-src="images/SUSE/app-window.png" style="width:  80px;" />
-    <img data-src="images/SUSE/darts.png" style="width:  80px;" />
-</div>
-
-
-<!-- .slide: data-state="normal" id="editorial-guidelines" class="guidelines" -->
-## Editorial Guidelines
-
-<h3>
-To help you achieve a consistent, professional message, general
-guidelines about SUSE style and grammar usage are outlined below.
-</h3>
-
-*   **Acronyms**: Acronyms may be used for industry terms provided you
-    spell out the terms at first reference in body copy.  Tables and
-    charts are an exception when real estate is limited. Example: The
-    Independent Software Vendor (ISV) solution …
-
-*   **NEVER** abbreviate product names in external presentations.
-
-*   **Capitalization**: The title of the presentation and the title and
-    subtitle of each slide are the only elements that should be
-    capitalized in title case. All other elements should be
-    capitalized in sentence case (only the first word of each sentence
-    capitalized). This includes bullet points, call outs, emphasized
-    words, table headings and captions.
-
-*   **Hyphenated compounds within titles**: If a hyphenated compound
-    appears in a title, lowercase the word following the hyphen; for
-    example, “Low-cost Alternatives”.
-
-*   **Bulleted lists**: To set off the lead text in bulleted lists (the
-    words “Bulleted lists” in this case), use colons. Try to keep
-    information presented in bulleted lists short, so it is easy for
-    audiences to consume.
-
-*   **Punctuation within bulleted lists**: Be consistent when punctuating
-    bulleted lists. For example, if you choose to use a complete
-    sentence in the first bullet, use complete sentences, and
-    punctuate accordingly for all bullets on that slide.
-
-*   **General punctuation**: Use “and” instead of “&” except in proper
-    names (e.g., AT&T). Write out percent signs.  Tables and charts
-    are the exception when real estate is limited.
-
-
-<!-- .slide: data-state="normal" id="trademarking-guidelines" class="guidelines" data-menu-title="Trademarking Guidelines" -->
-## Slide Trademarking Guidelines
-
-<h3>The following guidelines are basic rules for
-product naming and trademarking:</h3>
-
-*   **Product naming:** Use the full legal product name at all
-    references within the presentation; no product acronyms or
-    abbreviations are allowed.
-
-*   **Product trademarking:** SUSE&reg; products and
-    selected technologies should be trademarked at first reference on
-    each slide. This will help us legally protect these marks.
-
-*   **Third-party trademarking:** Except for Micro
-    Focus&reg;, SUSE does not reference third-party
-    trademarks.
-
-*   **Trademark design:** Trademarks should be large enough to be
-    recognized, but small enough so they do not distract from the
-    content.
-
-*   **Trademark placement:** The registered trademark symbol
-    (&reg;) should go on the baseline of the text. The
-    trademark and service mark symbols (™, SM) should be arranged so
-    that the top of the symbol is level with the top of the last
-    letter of the word being marked.
-
+<h2><a href="https://example.com/link/to/this/talk" target="_blank"
+       id="talk">https://example.com/link/to/this/talk</a></h2>
 

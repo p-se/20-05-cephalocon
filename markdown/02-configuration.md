@@ -1,4 +1,4 @@
-<!-- .slide: data-state="section-break-2" id="section-break-2" data-timing="10s" -->
+<!-- .slide: data-state="section-break-2" id="section-config" data-timing="10s" -->
 # Configuration
 
 
