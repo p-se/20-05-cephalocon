@@ -17,45 +17,19 @@
 <!-- .slide: data-state="normal" id="agenda" data-menu-title="Agenda" -->
 ## Motivation
 
-Intro to Prometheus and Grafana and provide enough info to customize the default
-monitoring stack for a given cluster
+Intro to Prometheus and PromQL. Demonstrate how to customize the default
+monitoring stack for a given cluster.
 
 ## Agenda
 
-* **Grafana**
-
-* **Prometheus**
-  * Intro
-  * Exporters
-  * Configuration
-  * Deployment considerations
-  * Query language
-  * Alerting
+* Intro Prometheus
+* Exporters
+* Configuration
+* Deployment considerations
+* Query language
 
 
-<!-- .slide: data-state="normal" id="grafana-intro" data-timing="30" -->
-## Grafana
-<h3>
-<q>
-The open platform for beautiful analytics and monitoring.
-</q>
-</h3>
-
-* Time-series data visualization
-* Started in 2012 by Torkel Ödegaard
-* Supports many data sources (55 as of March 2019)
-* Many features (most we won't use here)
-
-
-<!-- .slide: class="full-screen" data-state="normal" id="grafana-dash" data-timing="30" -->
-<img src="https://raw.githubusercontent.com/ceph/ceph/master/monitoring/grafana/screenshots/ceph-cluster1.png" />
-
-
-<!-- .slide: class="full-screen" data-state="normal" id="grafana-dashs" data-timing="30" -->
-<img src="images/grafana-dashboards.png" />
-
-
-<!-- .slide: data-state="normal" id="prometheus-intro" data-timing="30" style="z-index:1;"-->
+<!-- .slide: data-state="normal" id="prometheus-intro" data-timing="60s" style="z-index:1;"-->
 ## Prometheus
 
 <h3>
@@ -67,7 +41,7 @@ A leading open-source monitoring solution.
 * Originally developed at SoundCloud (started 2012), inspired by Borgmon
 * CNCF member project (2nd ever Incubator Project)
 * Built for highly-dimensional (_numerical_) data, simple operations, scalability
-* Powerful query language
+* Powerful query language _PromQL_
 * Widely adopted
 
 <img class="fragment" data-src="images/prom-users.png" style="height: 600px; position: absolute;
@@ -77,12 +51,12 @@ top: 200px; left: 400px; z-index:0;"/>
 top: 500px; left: 100px; z-index:0;"/>
 
 Note:
+* _NOT_ a log analysis system!!!
 * scalability often considered to be a result of the pull based model
 * also users: SUSE and most SES customers
-* _NOT_ a log analysis system!!!
 
 
-<!-- .slide: data-state="normal" id="alertmanager-intro" data-timing="30" -->
+<!-- .slide: data-state="normal" id="alertmanager-intro" data-timing="60s" -->
 ## Alertmanager
 
 <h3>
@@ -95,7 +69,6 @@ The Alertmanager handles alerts sent by client applications such as the Promethe
 * Typically deployed alongside Prometheus
 * Part of the Prometheus project
 * Can be used without Prometheus
-* _add http interface pic_
 
 Note:
 * cli flags for clustering; list of peers to query.
@@ -103,25 +76,24 @@ Note:
 * Prometheus interacts with Alertmanagers http API
 
 
-<!-- .slide: data-state="normal" id="exporters-intro" data-timing="30" -->
+<!-- .slide: data-state="normal" id="exporters-intro" data-timing="60s" -->
 ## Exporters
 
 * Simple plain-text interface via HTTP
 * _A lot_ of [existing exporters](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md)
 
 <div class="slide-section fragment" style="padding-top: 40px; padding-left:130px">
-<pre>
-<code>
-\# TYPE ceph_my_metric counter
-\# HELP ceph_my_metric metric description
+<pre><code class="xquery">
+# TYPE ceph_my_metric counter
+# HELP ceph_my_metric metric description
 ceph_my_metric{labelname="labelvalue", ...} metric_value
-</code>
-</pre>
+</code> </pre>
 </div>
 
 <p class="fragment" style="padding-top: 200px;">More on writing exporters: https://prometheus.io/docs/instrumenting/writing_exporters/</p>
 
 Note:
+* node_exporter is the first to look up
 * Ideally code is instrumented directly, client libraries exist
 * Basic metrics, no processing. Give only byte count not rate for example
 * Goal is to have a minimal set of metrics, leave metrics out that can be
