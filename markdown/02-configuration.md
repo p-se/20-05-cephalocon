@@ -52,6 +52,7 @@ Monitoring should scale.
 Note:
 * 2 things important: available and scalable
 
+
 <!-- .slide: data-state="normal" id="config-setups" data-timing="60s" -->
 ### Basic setup
 <img class="full-screen" src="images/basic_cluster.svg" />

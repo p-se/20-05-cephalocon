@@ -114,7 +114,7 @@ ceph_my_metric{ceph_daemon="osd.1",instance="data1.ceph",device="sdb"} 714
 * Correlate our metric with a smart attribute of its drive
 * `reallocated_sectors` actually called `smartmon_reallocated_sector_ct_rw_value` <!-- .element style="font-size: 20px;" -->
 * Has a `device` label
-* How many `reallocated_sectors` for `my_ceph_metric` devices?
+* How many `reallocated_sectors` for `ceph_my_metric` devices?
 
 <pre class="fragment"><code class="xquery"> > reallocated_sectors and on(device) ceph_my_metric
 reallocated_sectors{instance="data1.ceph",device="sda"} 0
