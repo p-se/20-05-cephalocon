@@ -13,6 +13,9 @@
     </div>
 </div>
 
+Note:
+mention potential gotometting disconntect
+
 
 <!-- .slide: data-state="normal" id="agenda" data-menu-title="Agenda" -->
 ## Motivation
@@ -87,6 +90,7 @@ Note:
 # TYPE ceph_my_metric counter
 # HELP ceph_my_metric metric description
 ceph_my_metric{labelname="labelvalue", ...} metric_value
+ceph_my_metric{labelname="another_labelvalue", ...} metric_value
 </code> </pre>
 </div>
 

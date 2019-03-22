@@ -127,6 +127,9 @@ reallocated_sectors{instance="data3.ceph",device="sda"} 1
 reallocated_sectors{instance="data1.ceph",device="sda"} 0
 </code></pre>
 
+Note:
+* when labels don't quite match use `label_replace`
+
 
 <!-- .slide: data-state="normal" id="query-level3" data-timing="60s" -->
 ## Complex queries - Back to the Future
@@ -183,6 +186,7 @@ Note:
 * Visualization - Grafana
 * Federation
 * Push Gateways
+* Recording rules
 * Label rewriting
 * Security
 * Remote storage
