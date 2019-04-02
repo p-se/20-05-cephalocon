@@ -8,6 +8,9 @@ Reveal.initialize({
 
     margin: 0.01,
 
+    // print settings
+    pdfMaxPagesPerSlide: 1,
+
     controls: true, // press C to toggle
     controlsTutorial: true,
     slideNumber: true,
