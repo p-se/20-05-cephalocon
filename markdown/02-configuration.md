@@ -14,7 +14,6 @@
 global:
   scrape_interval:     15s
   evaluation_interval: 15s
-  external_labels: []
 rule_files: []
 scrape_configs:
   - job_name: 'prometheus'
@@ -22,16 +21,61 @@ scrape_configs:
       - targets: ['prometheus.ecorp.com:9090']
   - job_name: 'node stats'
     file_sd_configs:
-      - files: ['/etc/prometheus/SUSE/*.yaml']
+      - files: ['/etc/prometheus/node_exporters/*.yaml']
+  - job_name: 'K8s Nodes'
+    kubernetes_sd_configs:
+      - role: node
 </code>
 </pre>
 
 Note:
 * Daemon behavior includes used port, path and such
 * Runtime covers scrape targets, label mangling and rules definition
-* In SUSE Enterprise Storage we use salt (in DeepSea)
+* k8s sd queries k8s rest api
 * many more service discovery integrations
-* kubernetes, openstackm ec2, gce
+* dns, openstackm ec2, gce
+
+
+<!-- .slide: data-state="normal" id="config-sd" data-timing="60s" -->
+## Dynamic scrape target discovery
+### Service discovery configuration
+
+<pre>
+<code class="yaml hljs" style="font-size:20px; line-height: 25px;">
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus.ecorp.com:9090']
+</code>
+</pre>
+
+<pre class="fragment">
+<code class="yaml hljs" style="font-size:20px; line-height: 25px;">
+  - job_name: 'K8s Nodes'
+    kubernetes_sd_configs:
+      - role: node # or service, pod, endpoints or ingress
+        # api_server: $host
+</code>
+</pre>
+
+<pre class="fragment">
+<code class="yaml hljs" style="font-size:20px; line-height: 25px;">
+  - job_name: 'node stats'
+    file_sd_configs:
+      - files:
+        - '/etc/prometheus/other_exporter/part1*.yaml'
+</code>
+</pre>
+
+Note:
+* since pull based, prometheus needs to know where to scrape
+* static can be dynamic depending on DNS setup
+* DNS sd also allows to query different DNS records
+
+* api_server not necessary when running inside k8s
+
+* files contain static_configs
+* file_sd most versatile, allows for various partitioning approaches
 
 
 <!-- .slide: data-state="normal" id="config-deployment" data-timing="60s" -->

@@ -2,7 +2,7 @@
 
 <div class="title">
     <h1>Monitoring Ceph with Prometheus</h1>
-    <h2></h2>
+    <h3>An introduction</h3>
 </div>
 
 <div class="row presenters">
@@ -14,14 +14,13 @@
 </div>
 
 Note:
-mention potential gotometting disconntect
 
 
 <!-- .slide: data-state="normal" id="agenda" data-menu-title="Agenda" -->
 ## Motivation
 
-Intro to Prometheus and PromQL. Demonstrate how to customize the default
-monitoring stack for a given cluster.
+Intro to Prometheus and PromQL.
+Ease the pains of starting with Prometheus-based monitoring.
 
 ## Agenda
 
@@ -50,11 +49,13 @@ A leading open-source monitoring solution.
 <img class="fragment" data-src="images/prom-users.png" style="height: 600px; position: absolute;
 top: 200px; left: 400px; z-index:0;"/>
 
-<img class="fragment" data-src="images/SUSE/SUSE-logo.svg" style="width: 200px; position: absolute;
-top: 500px; left: 100px; z-index:0;"/>
+<!-- <img class="fragment" data-src="images/SUSE/SUSE-logo.svg" style="width: 200px; position: absolute; -->
+<!-- top: 500px; left: 100px; z-index:0;"/> -->
 
 Note:
 * _NOT_ a log analysis system!!!
+* usually not for long term analysis
+* prometheus' approach is pull based, different from most tools used
 * scalability often considered to be a result of the pull based model
 * also users: SUSE and most SES customers
 

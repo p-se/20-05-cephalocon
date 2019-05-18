@@ -180,7 +180,10 @@ Note:
 
 
 <!-- .slide: data-state="normal" id="more" data-timing="60s" -->
-## Much more we didn't cover.
+## Get started
+Checkout the [monitoring sub-directory in the Ceph repository FIX](https://github.com/ceph/ceph/tree/master/monitoring).
+
+### Much more we didn't cover. <!-- .element style="padding-top: 50px" -->
 
 * Alertmanager configuration - alert channels, inhibition, silencing, grouping
 * Visualization - Grafana
@@ -199,8 +202,16 @@ Note:
 <div style="color: #02d35f; padding-top: 300px;">
 <span style="font-weight: bold;">
 Many Thanks to
-<a style="color: #02d35f !important;" href="https://github.com/aspiers/presentation-template">Adam Spiers</a> ,
+<a style="color: #02d35f !important;" href="https://github.com/aspiers/presentation-template">Adam Spiers</a>,
 <a style="color: #02d35f !important;" href="https://github.com/fghaas/presentation-template/">Florian Haas</a> and 
 <a style="color: #02d35f !important;" href="https://github.com/hakimel/reveal.js/">Hakim El-Hattab and contributors</a>
 </span>
 </div>
+
+
+<!-- .slide: data-state="normal" id="credits" data-menu-title="QR code" data-timing="0" -->
+<div class="qrcode palette-text" id="qrcode-talk" />
+
+<h2><a href="https://jan--f.github.io/20-05-cephalocon/" target="_blank"
+       id="talk">https://jan--f.github.io/20-05-cephalocon/</a></h2>
+
