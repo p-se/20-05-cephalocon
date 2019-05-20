@@ -37,9 +37,10 @@ Note:
 
 
 <!-- .slide: data-state="normal" id="config-sd" data-timing="60s" -->
-## Dynamic scrape target discovery
-### Service discovery configuration
+## Service discovery configuration
 
+<div class="col-container">
+<div class="col">
 <pre>
 <code class="yaml hljs" style="font-size:20px; line-height: 25px;">
 scrape_configs:
@@ -48,24 +49,54 @@ scrape_configs:
       - targets: ['prometheus.ecorp.com:9090']
 </code>
 </pre>
+</div>
 
-<pre class="fragment">
+<div class="col">
+<ul>
+<li>Ideal for well known names (or addresses)</li>
+<li>Prometheus won't notice changes</li>
+</ul>
+</div>
+</div>
+
+<div class="col-container fragment">
+<div class="col">
+<pre>
 <code class="yaml hljs" style="font-size:20px; line-height: 25px;">
   - job_name: 'K8s Nodes'
     kubernetes_sd_configs:
-      - role: node # or service, pod, endpoints or ingress
+      - role: node
         # api_server: $host
 </code>
 </pre>
+</div>
+<div class="col">
+<ul>
+<li>role can also be service, pod, endpoints or ingress</li>
+</ul>
+</div>
+</div>
 
-<pre class="fragment">
+<div class="col-container fragment">
+<div class="col">
+<pre>
 <code class="yaml hljs" style="font-size:20px; line-height: 25px;">
   - job_name: 'node stats'
     file_sd_configs:
       - files:
-        - '/etc/prometheus/other_exporter/part1*.yaml'
+        - '/etc/prometheus/node_exporter/*.yaml'
 </code>
 </pre>
+</div>
+<div class="col">
+<ul>
+<li>files contain `static_config` fragments</li>
+<li>very flexible service discovery</li>
+<li>match against a file name glob</li>
+<li>use config management to populate files</li>
+</ul>
+</div>
+</div>
 
 Note:
 * since pull based, prometheus needs to know where to scrape

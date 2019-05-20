@@ -181,7 +181,7 @@ Note:
 
 <!-- .slide: data-state="normal" id="more" data-timing="60s" -->
 ## Get started
-Checkout the [monitoring sub-directory in the Ceph repository FIX](https://github.com/ceph/ceph/tree/master/monitoring).
+Checkout the [monitoring sub-directory in the Ceph repository](https://github.com/ceph/ceph/tree/master/monitoring).
 
 ### Much more we didn't cover. <!-- .element style="padding-top: 50px" -->
 

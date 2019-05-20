@@ -11,6 +11,9 @@
         <h3 class="job-title">Senior Software Engineer</h3>
         <h3 class="email"><a href="mailto:jan.fajerski@suse.com">jan.fajerski@suse.com</a></h3>
     </div>
+    <div class="presenter presenter-2">
+        <h3 class="email" style="padding-top: 80px;">Cephalocon, 20.05.2019, Barcelona</h3>
+    </div>
 </div>
 
 Note:
@@ -42,7 +45,7 @@ A leading open-source monitoring solution.
 
 * Originally developed at SoundCloud (started 2012), inspired by Borgmon
 * CNCF member project (2nd ever Incubator Project)
-* Built for highly-dimensional (_numerical_) data, simple operations, scalability
+* Build for highly-dimensional (_numerical_) data, simple operations, scalability
 * Powerful query language _PromQL_
 * Widely adopted
 
@@ -85,6 +88,7 @@ Note:
 
 * Simple plain-text interface via HTTP
 * _A lot_ of [existing exporters](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md)
+* `ceph mgr module enable prometheus` (>= luminous)
 
 <div class="slide-section fragment" style="padding-top: 40px; padding-left:130px">
 <pre><code class="xquery">
